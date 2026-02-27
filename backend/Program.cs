@@ -20,6 +20,15 @@ builder.Services.AddSingleton<IDispatcher, Dispatcher>();
 builder.Services.AddTransient<ICommandHandler<CreatePacienteCommand, long>, CreatePacienteHandler>();
 builder.Services.AddTransient<IQueryHandler<GetPacientesQuery, IEnumerable<Lab.Api.Application.DTOs.PacienteDto>>, GetPacientesHandler>();
 
+builder.Services.AddTransient<ICommandHandler<CreateCUPSCommand, long>, CreateCUPSHandler>();
+builder.Services.AddTransient<IQueryHandler<GetCUPSQuery, IEnumerable<Lab.Api.Application.DTOs.CUPSDto>>, GetCUPSHandler>();
+
+builder.Services.AddTransient<ICommandHandler<CreateExamenCommand, long>, CreateExamenHandler>();
+builder.Services.AddTransient<IQueryHandler<GetExamenesQuery, IEnumerable<Lab.Api.Application.DTOs.ExamenDto>>, GetExamenesHandler>();
+
+builder.Services.AddTransient<ICommandHandler<CreateSolicitudCommand, long>, CreateSolicitudHandler>();
+builder.Services.AddTransient<ICommandHandler<CreateFacturaCommand, long>, CreateFacturaHandler>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
