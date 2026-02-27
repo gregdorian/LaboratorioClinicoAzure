@@ -14,6 +14,8 @@ namespace Lab.Api.Infrastructure
         public DbSet<SolicitudExamen> SolicitudesExamen { get; set; } = null!;
         public DbSet<ExamenSolicitado> ExamenesSolicitados { get; set; } = null!;
         public DbSet<Factura> Factura { get; set; } = null!;
+        public DbSet<DisponibilidadHoraria> DisponibilidadHoraria { get; set; } = null!;
+        public DbSet<Cita> Citas { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,6 +76,23 @@ namespace Lab.Api.Infrastructure
                 b.HasKey(f => f.IdFactura);
                 b.Property(f => f.IdFactura).ValueGeneratedOnAdd();
                 b.Property(f => f.NroFactura).HasMaxLength(30).IsRequired();
+            });
+
+            modelBuilder.Entity<DisponibilidadHoraria>(b =>
+            {
+                b.ToTable("DisponibilidadHoraria");
+                b.HasKey(d => d.IdDisponibilidad);
+                b.Property(d => d.IdDisponibilidad).ValueGeneratedOnAdd();
+                b.Property(d => d.CodigoSede).HasMaxLength(20).IsRequired();
+                b.Property(d => d.RowVer).IsRowVersion();
+            });
+
+            modelBuilder.Entity<Cita>(b =>
+            {
+                b.ToTable("Citas");
+                b.HasKey(c => c.IdCita);
+                b.Property(c => c.IdCita).ValueGeneratedOnAdd();
+                b.Property(c => c.Motivo).HasMaxLength(500);
             });
         }
     }

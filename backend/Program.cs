@@ -28,6 +28,8 @@ builder.Services.AddTransient<IQueryHandler<GetExamenesQuery, IEnumerable<Lab.Ap
 
 builder.Services.AddTransient<ICommandHandler<CreateSolicitudCommand, long>, CreateSolicitudHandler>();
 builder.Services.AddTransient<ICommandHandler<CreateFacturaCommand, long>, CreateFacturaHandler>();
+builder.Services.AddTransient<ICommandHandler<PublishSlotsCommand, int>, PublishSlotsHandler>();
+builder.Services.AddTransient<ICommandHandler<ProgramarCitaCommand, long>, ProgramarCitaHandler>();
 
 var app = builder.Build();
 
