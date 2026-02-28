@@ -13,44 +13,29 @@ namespace Lab.Api.Application.Commands
 
         public async Task<long> Handle(ProgramarCitaCommand command)
         {
-            using var tx = await _db.Database.BeginTransactionAsync();
+            // Call stored procedure sp_ProgramarCita to handle concurrency and notifications in DB
+            var idCitaParam = new Microsoft.Data.SqlClient.SqlParameter("@IdCitaNueva", System.Data.SqlDbType.BigInt) { Direction = System.Data.ParameterDirection.Output };
+            var mensajeParam = new Microsoft.Data.SqlClient.SqlParameter("@Mensaje", System.Data.SqlDbType.NVarChar, 200) { Direction = System.Data.ParameterDirection.Output };
+            var rowVerParam = command.RowVerEsperado != null
+                ? new Microsoft.Data.SqlClient.SqlParameter("@RowVerEsperado", System.Data.SqlDbType.Binary, 8) { Value = command.RowVerEsperado }
+                : new Microsoft.Data.SqlClient.SqlParameter("@RowVerEsperado", System.Data.SqlDbType.Binary, 8) { Value = System.DBNull.Value };
 
-            var slot = await _db.DisponibilidadHoraria
-                .Where(d => d.IdDisponibilidad == command.IdDisponibilidad && d.Activo)
-                .FirstOrDefaultAsync();
+            await _db.Database.ExecuteSqlRawAsync(
+                "EXEC sp_ProgramarCita @IdPaciente, @IdDisponibilidad, @RowVerEsperado, @Motivo, @HistorialMedico, @Medicamentos, @Observaciones, @IdCitaNueva OUTPUT, @Mensaje OUTPUT",
+                new Microsoft.Data.SqlClient.SqlParameter("@IdPaciente", command.IdPaciente),
+                new Microsoft.Data.SqlClient.SqlParameter("@IdDisponibilidad", command.IdDisponibilidad),
+                rowVerParam,
+                new Microsoft.Data.SqlClient.SqlParameter("@Motivo", command.Motivo ?? (object)System.DBNull.Value),
+                new Microsoft.Data.SqlClient.SqlParameter("@HistorialMedico", command.HistorialMedico ?? (object)System.DBNull.Value),
+                new Microsoft.Data.SqlClient.SqlParameter("@Medicamentos", command.Medicamentos ?? (object)System.DBNull.Value),
+                new Microsoft.Data.SqlClient.SqlParameter("@Observaciones", command.Observaciones ?? (object)System.DBNull.Value),
+                idCitaParam,
+                mensajeParam
+            );
 
-            if (slot == null) throw new System.Exception("Slot not found or inactive");
-
-            if (command.RowVerEsperado != null && !slot.RowVer.SequenceEqual(command.RowVerEsperado))
-                throw new System.Exception("El slot fue modificado concurrentemente.");
-
-            if (slot.CuposOcupados >= slot.CupoMaximo) throw new System.Exception("No hay cupo disponible.");
-
-            // check patient doesn't already have an active cita for same slot
-            var exists = await _db.Citas.AnyAsync(c => c.IdPaciente == command.IdPaciente && c.IdDisponibilidad == command.IdDisponibilidad && c.IdEstadoCita != 3);
-            if (exists) throw new System.Exception("El paciente ya tiene una cita en ese horario.");
-
-            var cita = new Cita
-            {
-                IdPaciente = command.IdPaciente,
-                IdDisponibilidad = command.IdDisponibilidad,
-                Motivo = command.Motivo,
-                HistorialMedico = command.HistorialMedico,
-                Medicamentos = command.Medicamentos,
-                ObservacionesPac = command.Observaciones,
-                FechaRegistro = System.DateTime.UtcNow
-            };
-
-            _db.Citas.Add(cita);
-
-            // increment cupos
-            slot.CuposOcupados += 1;
-            _db.DisponibilidadHoraria.Update(slot);
-
-            await _db.SaveChangesAsync();
-            await tx.CommitAsync();
-
-            return cita.IdCita;
+            var id = (idCitaParam.Value == System.DBNull.Value) ? -1L : Convert.ToInt64(idCitaParam.Value);
+            if (id <= 0) throw new System.Exception((mensajeParam.Value as string) ?? "Error scheduling");
+            return id;
         }
     }
 }

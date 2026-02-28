@@ -7,8 +7,11 @@ using System.Linq;
 
 namespace Lab.Api.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class RipsController : ControllerBase
     {
         private readonly IDispatcher _dispatcher;

@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace Lab.Api.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CitasController : ControllerBase
     {
         private readonly IDispatcher _dispatcher;

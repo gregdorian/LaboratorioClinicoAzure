@@ -8,8 +8,11 @@ using System.Collections.Generic;
 
 namespace Lab.Api.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PacientesController : ControllerBase
     {
         private readonly IDispatcher _dispatcher;

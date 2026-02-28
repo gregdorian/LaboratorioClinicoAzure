@@ -15,34 +15,18 @@ namespace Lab.Api.Application.Commands
 
         public async Task<int> Handle(GenerarRipsCommand command)
         {
-            var solicitudes = await _db.SolicitudesExamen
-                .Where(s => s.FechaSolicitud.Date >= command.FechaInicio.Date && s.FechaSolicitud.Date <= command.FechaFin.Date && !s.IsAnulado)
-                .ToListAsync();
+            // Use stored procedure sp_GenerarRIPS_Transaccional to generate RIPS in DB
+            await _db.Database.ExecuteSqlRawAsync(
+                "EXEC sp_GenerarRIPS_Transaccional @FechaInicio, @FechaFin, @IdEntidad, @Usuario",
+                new Microsoft.Data.SqlClient.SqlParameter("@FechaInicio", command.FechaInicio),
+                new Microsoft.Data.SqlClient.SqlParameter("@FechaFin", command.FechaFin),
+                new Microsoft.Data.SqlClient.SqlParameter("@IdEntidad", command.IdEntidad ?? (object)System.DBNull.Value),
+                new Microsoft.Data.SqlClient.SqlParameter("@Usuario", command.Usuario ?? (object)System.DBNull.Value)
+            );
 
-            var created = 0;
-            foreach (var s in solicitudes)
-            {
-                // generate a simple consecutivo: YYYYMMDD + Guid short
-                var cons = s.FechaSolicitud.ToString("yyyyMM") + DateTime.Now.ToString("dd") + "-" + Guid.NewGuid().ToString("N").Substring(0,6);
-
-                var r = new RipsTransaccional
-                {
-                    IdSolicitud = s.IdSolicitud,
-                    IdFactura = null,
-                    ConsecutivoRips = cons,
-                    CodigoCups = "000000",
-                    FechaAtencion = s.FechaSolicitud,
-                    ValorTotal = 0,
-                    EsGenerado = true,
-                    LoteRips = null
-                };
-
-                _db.RipsTransaccional.Add(r);
-                created++;
-            }
-
-            await _db.SaveChangesAsync();
-            return created;
+            // count generated rows in range
+            var count = await _db.RipsTransaccional.CountAsync(r => r.FechaAtencion.Date >= command.FechaInicio.Date && r.FechaAtencion.Date <= command.FechaFin.Date && r.EsGenerado);
+            return count;
         }
     }
 }

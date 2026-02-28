@@ -15,35 +15,22 @@ namespace Lab.Api.Application.Commands
 
         public async Task<long> Handle(GenerarLoteRipsCommand command)
         {
-            using var tx = await _db.Database.BeginTransactionAsync();
+            // Call stored procedure sp_GenerarLoteRIPS which returns @IdLote and @Mensaje
+            var idLoteParam = new Microsoft.Data.SqlClient.SqlParameter("@IdLote", System.Data.SqlDbType.BigInt) { Direction = System.Data.ParameterDirection.Output };
+            var mensajeParam = new Microsoft.Data.SqlClient.SqlParameter("@Mensaje", System.Data.SqlDbType.NVarChar, 500) { Direction = System.Data.ParameterDirection.Output };
 
-            // Count existing for today to create a three-digit sequence
-            var today = DateTime.UtcNow.Date;
-            var countToday = await _db.RipsLoteControl.CountAsync(l => l.FechaGeneracion.Date == today);
-            var seq = countToday + 1;
-            var numero = $"RIPS-{DateTime.UtcNow:yyyyMMdd}-{seq:000}";
+            await _db.Database.ExecuteSqlRawAsync(
+                "EXEC sp_GenerarLoteRIPS @FechaInicio, @FechaFin, @Usuario, @IdLote OUTPUT, @Mensaje OUTPUT",
+                new Microsoft.Data.SqlClient.SqlParameter("@FechaInicio", command.FechaInicio),
+                new Microsoft.Data.SqlClient.SqlParameter("@FechaFin", command.FechaFin),
+                new Microsoft.Data.SqlClient.SqlParameter("@Usuario", command.Usuario ?? (object)System.DBNull.Value),
+                idLoteParam,
+                mensajeParam
+            );
 
-            var lote = new RipsLoteControl
-            {
-                NumeroLote = numero,
-                FechaGeneracion = DateTime.UtcNow,
-                UsuarioGeneracion = command.Usuario
-            };
-
-            // Note: UsuarioGeneracion property not defined in entity; we'll add dynamic assignment via reflection fallback
-            try { _db.RipsLoteControl.Add(lote); await _db.SaveChangesAsync(); }
-            catch { throw; }
-
-            // Assign lote to generated RIPS rows in date range
-            var updated = await _db.RipsTransaccional
-                .Where(r => r.FechaAtencion.Date >= command.FechaInicio.Date && r.FechaAtencion.Date <= command.FechaFin.Date && r.LoteRips == null)
-                .ToListAsync();
-
-            foreach (var r in updated) r.LoteRips = numero;
-            await _db.SaveChangesAsync();
-
-            await tx.CommitAsync();
-            return lote.IdLote;
+            var id = (idLoteParam.Value == System.DBNull.Value) ? -1L : Convert.ToInt64(idLoteParam.Value);
+            if (id <= 0) throw new System.Exception((mensajeParam.Value as string) ?? "Error creating lote RIPS");
+            return id;
         }
     }
 }

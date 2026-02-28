@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 
 namespace Lab.Api.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Facturador")]
     public class FacturasController : ControllerBase
     {
         private readonly IDispatcher _dispatcher;

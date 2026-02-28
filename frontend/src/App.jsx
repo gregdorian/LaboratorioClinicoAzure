@@ -1,15 +1,24 @@
 import React, {useEffect, useState} from 'react'
+import CUPS from './components/CUPS'
+import Examenes from './components/Examenes'
+import Solicitudes from './components/Solicitudes'
+import Facturas from './components/Facturas'
+import Login from './components/Auth/Login'
+import Register from './components/Auth/Register'
+import Dashboard from './components/Dashboard'
+
+const API_BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 
 function Pacientes(){
   const [pacientes, setPacientes] = useState([])
   const [form, setForm] = useState({nombre:'', primerApellido:'', idTipoDocumento:'CC', nroIdent:'', fechaNacimiento:''})
 
-  useEffect(()=>{ fetch('/api/pacientes').then(r=>r.json()).then(setPacientes) },[])
+  useEffect(()=>{ import('./api').then(m=>m.apiFetch('/api/pacientes').then(r=>r.json()).then(setPacientes)) },[])
 
   const submit = async e => {
     e.preventDefault()
-    await fetch('/api/pacientes',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ IdTipoDocumento: form.idTipoDocumento, NroIdentificacion: form.nroIdent, Nombre: form.nombre, PrimerApellido: form.primerApellido, FechaNacimiento: form.fechaNacimiento }) })
-    const res = await fetch('/api/pacientes'); setPacientes(await res.json())
+    await (await import('./api')).apiFetch('/api/pacientes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ IdTipoDocumento: form.idTipoDocumento, NroIdentificacion: form.nroIdent, Nombre: form.nombre, PrimerApellido: form.primerApellido, FechaNacimiento: form.fechaNacimiento }) })
+    const res = await (await import('./api')).apiFetch('/api/pacientes'); setPacientes(await res.json())
   }
 
   return (
@@ -37,7 +46,7 @@ function Slots(){
   const [publish, setPublish] = useState({cantidad:8, inicio: new Date().toISOString().slice(0,16), dur:30})
 
   const load = async ()=>{
-    const res = await fetch(`/api/disponibilidad/slots?codigoSede=${encodeURIComponent(codigoSede)}&fecha=${fecha}`)
+    const res = await (await import('./api')).apiFetch(`/api/disponibilidad/slots?codigoSede=${encodeURIComponent(codigoSede)}&fecha=${fecha}`)
     setSlots(await res.json())
   }
 
@@ -45,7 +54,7 @@ function Slots(){
 
   const doPublish = async e => {
     e.preventDefault()
-    await fetch('/api/disponibilidad/publish',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ CodigoSede: codigoSede, FechaInicio: publish.inicio, CantidadSlots: Number(publish.cantidad), DuracionMinutos: Number(publish.dur), CupoMaximoPorSlot:1 })})
+    await (await import('./api')).apiFetch('/api/disponibilidad/publish',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ CodigoSede: codigoSede, FechaInicio: publish.inicio, CantidadSlots: Number(publish.cantidad), DuracionMinutos: Number(publish.dur), CupoMaximoPorSlot:1 })})
     load()
   }
 
@@ -54,7 +63,7 @@ function Slots(){
     if (!idPaciente) return
     // RowVer is binary; backend expects byte[] via base64 string
     const body = { IdPaciente: Number(idPaciente), IdDisponibilidad: slot.idDisponibilidad, RowVerEsperado: slot.rowVer }
-    const res = await fetch('/api/citas/programar',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+    const res = await (await import('./api')).apiFetch('/api/citas/programar',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
     if (res.status === 201) alert('Cita programada')
     else alert('Error al programar')
     load()
@@ -90,14 +99,41 @@ function Slots(){
 
 export default function App(){
   const [tab, setTab] = useState('pacientes')
+  const [auth, setAuth] = useState(() => ({ token: localStorage.getItem('lab_token'), username: localStorage.getItem('lab_user') }))
+
+  const handleLogin = (payload) => {
+    setAuth(payload)
+    setTab('dashboard')
+  }
+
+  const handleLogout = () => {
+    setAuth({ token: null, username: null })
+    setTab('login')
+  }
+
   return (
     <div style={{padding:20}}>
       <h1>Lab Frontend</h1>
       <div style={{marginBottom:12}}>
         <button onClick={()=>setTab('pacientes')}>Pacientes</button>
         <button onClick={()=>setTab('slots')} style={{marginLeft:8}}>Slots / Citas</button>
+        <button onClick={()=>setTab('cups')} style={{marginLeft:8}}>CUPS</button>
+        <button onClick={()=>setTab('examenes')} style={{marginLeft:8}}>Exámenes</button>
+        <button onClick={()=>setTab('solicitudes')} style={{marginLeft:8}}>Solicitudes</button>
+        <button onClick={()=>setTab('facturas')} style={{marginLeft:8}}>Facturas</button>
+        <button onClick={()=>setTab('dashboard')} style={{marginLeft:8}}>Dashboard</button>
+        {!auth.token && <button onClick={()=>setTab('login')} style={{marginLeft:8}}>Login</button>}
+        {!auth.token && <button onClick={()=>setTab('register')} style={{marginLeft:8}}>Register</button>}
       </div>
-      {tab==='pacientes' ? <Pacientes/> : <Slots/>}
+      {tab==='pacientes' && <Pacientes/>}
+      {tab==='slots' && <Slots/>}
+      {tab==='cups' && <CUPS apiBase={API_BASE}/>} 
+      {tab==='examenes' && <Examenes apiBase={API_BASE}/>} 
+      {tab==='solicitudes' && <Solicitudes apiBase={API_BASE}/>} 
+      {tab==='facturas' && <Facturas apiBase={API_BASE}/>} 
+      {tab==='login' && <Login onLogin={handleLogin}/>}
+      {tab==='register' && <Register/>}
+      {tab==='dashboard' && <Dashboard onLogout={handleLogout}/>}
     </div>
   )
 }
