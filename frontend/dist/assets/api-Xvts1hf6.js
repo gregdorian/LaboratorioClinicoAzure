@@ -1,0 +1,1 @@
+const c="".replace(/\/$/,"");async function r(s,e={}){const t=localStorage.getItem("lab_token"),a=Object.assign({},e.headers||{});return t&&(a.Authorization=`Bearer ${t}`),await fetch(`${c}${s}`,Object.assign({},e,{headers:a}))}export{r as apiFetch,c as default};

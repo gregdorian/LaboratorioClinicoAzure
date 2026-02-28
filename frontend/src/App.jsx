@@ -6,6 +6,9 @@ import Facturas from './components/Facturas'
 import Login from './components/Auth/Login'
 import Register from './components/Auth/Register'
 import Dashboard from './components/Dashboard'
+import Rips from './components/Rips'
+import Notifications from './components/Notifications'
+import FacturasList from './components/FacturasList'
 
 const API_BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 
@@ -122,6 +125,9 @@ export default function App(){
         <button onClick={()=>setTab('solicitudes')} style={{marginLeft:8}}>Solicitudes</button>
         <button onClick={()=>setTab('facturas')} style={{marginLeft:8}}>Facturas</button>
         <button onClick={()=>setTab('dashboard')} style={{marginLeft:8}}>Dashboard</button>
+        <button onClick={()=>setTab('rips')} style={{marginLeft:8}}>RIPS</button>
+        <button onClick={()=>setTab('notifications')} style={{marginLeft:8}}>Notifications</button>
+        <button onClick={()=>setTab('facturas_list')} style={{marginLeft:8}}>Facturas (lista)</button>
         {!auth.token && <button onClick={()=>setTab('login')} style={{marginLeft:8}}>Login</button>}
         {!auth.token && <button onClick={()=>setTab('register')} style={{marginLeft:8}}>Register</button>}
       </div>
@@ -134,6 +140,9 @@ export default function App(){
       {tab==='login' && <Login onLogin={handleLogin}/>}
       {tab==='register' && <Register/>}
       {tab==='dashboard' && <Dashboard onLogout={handleLogout}/>}
+      {tab==='rips' && <Rips />}
+      {tab==='notifications' && <Notifications />}
+      {tab==='facturas_list' && <FacturasList />}
     </div>
   )
 }
