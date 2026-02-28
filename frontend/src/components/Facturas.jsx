@@ -6,7 +6,7 @@ export default function Facturas({apiBase}){
   const submit = async e => {
     e.preventDefault()
     const body = { IdSolicitud: Number(form.idSolicitud), IdEntidadPagadora: Number(form.idEntidad), MontoTotal: Number(form.monto), FechaFacturacion: new Date(form.fecha).toISOString() }
-    const res = await (await import('./api')).apiFetch('/api/facturas',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+    const res = await (await import('../api')).apiFetch('/api/facturas',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
     if (res.status===201) { alert('Factura creada'); setForm({idSolicitud:'', idEntidad:'', monto:'', fecha:new Date().toISOString().slice(0,10)}) }
     else alert('Error creando factura')
   }

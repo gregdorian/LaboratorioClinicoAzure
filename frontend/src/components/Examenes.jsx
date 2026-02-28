@@ -4,12 +4,12 @@ export default function Examenes({apiBase}){
   const [examenes, setExamenes] = useState([])
   const [form, setForm] = useState({codigo:'', nombre:''})
 
-  useEffect(()=>{ import('./api').then(m=>m.apiFetch('/api/examenes').then(r=>r.json()).then(setExamenes)) },[])
+  useEffect(()=>{ import('../api').then(m=>m.apiFetch('/api/examenes').then(r=>r.json()).then(setExamenes)) },[])
 
   const submit = async e => {
     e.preventDefault()
-    await (await import('./api')).apiFetch('/api/examenes',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ CodigoExamen: form.codigo, NombreExamen: form.nombre })})
-    const res = await (await import('./api')).apiFetch('/api/examenes'); setExamenes(await res.json())
+    await (await import('../api')).apiFetch('/api/examenes',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ CodigoExamen: form.codigo, NombreExamen: form.nombre })})
+    const res = await (await import('../api')).apiFetch('/api/examenes'); setExamenes(await res.json())
     setForm({codigo:'', nombre:''})
   }
 

@@ -4,12 +4,12 @@ export default function CUPS({apiBase}){
   const [cups, setCups] = useState([])
   const [form, setForm] = useState({codigo:'', descripcion:'', tipoServicio:''})
 
-  useEffect(()=>{ import('./api').then(m=>m.apiFetch('/api/cups').then(r=>r.json()).then(setCups)) },[])
+  useEffect(()=>{ import('../api').then(m=>m.apiFetch('/api/cups').then(r=>r.json()).then(setCups)) },[])
 
   const submit = async e => {
     e.preventDefault()
-    await (await import('./api')).apiFetch('/api/cups',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ CodigoCUPS: form.codigo, Descripcion: form.descripcion, TipoServicio: form.tipoServicio })})
-    const res = await (await import('./api')).apiFetch('/api/cups'); setCups(await res.json())
+    await (await import('../api')).apiFetch('/api/cups',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ CodigoCUPS: form.codigo, Descripcion: form.descripcion, TipoServicio: form.tipoServicio })})
+    const res = await (await import('../api')).apiFetch('/api/cups'); setCups(await res.json())
     setForm({codigo:'', descripcion:'', tipoServicio:''})
   }
 

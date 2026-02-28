@@ -7,7 +7,7 @@ export default function Dashboard({onLogout}){
   const [serverInfo, setServerInfo] = useState(null)
 
   useEffect(()=>{
-    import('./api').then(m=>{
+    import('../api').then(m=>{
       m.apiFetch('/api/pacientes').then(r=>r.ok? r.json(): null).then(d=>setServerInfo(d?.length ? `Pacientes: ${d.length}` : 'Authenticated')).catch(()=>setServerInfo('Authenticated'))
     })
   },[])

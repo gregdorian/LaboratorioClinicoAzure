@@ -7,7 +7,7 @@ export default function Solicitudes({apiBase}){
   const [form, setForm] = useState({idPaciente:'', idMedico:'', fechaSolicitud:new Date().toISOString().slice(0,10)})
 
   useEffect(()=>{
-    import('./api').then(m=>{
+    import('../api').then(m=>{
       m.apiFetch('/api/pacientes').then(r=>r.json()).then(setPacientes)
       m.apiFetch('/api/examenes').then(r=>r.json()).then(setExamenes)
     })
@@ -25,7 +25,7 @@ export default function Solicitudes({apiBase}){
       FechaSolicitud: new Date(form.fechaSolicitud).toISOString(),
       Examenes: items.map(i=>({ IdExamen: Number(i.idExamen), Cantidad: Number(i.cantidad), ValorUnitario: Number(i.valorUnitario) }))
     }
-    const res = await (await import('./api')).apiFetch('/api/solicitudes',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+    const res = await (await import('../api')).apiFetch('/api/solicitudes',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
     if (res.status===201) { alert('Solicitud creada'); setItems([]); setForm({idPaciente:'', idMedico:'', fechaSolicitud:new Date().toISOString().slice(0,10)}) }
     else { alert('Error creando solicitud') }
   }
