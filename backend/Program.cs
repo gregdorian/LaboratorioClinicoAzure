@@ -30,6 +30,10 @@ builder.Services.AddTransient<ICommandHandler<CreateSolicitudCommand, long>, Cre
 builder.Services.AddTransient<ICommandHandler<CreateFacturaCommand, long>, CreateFacturaHandler>();
 builder.Services.AddTransient<ICommandHandler<PublishSlotsCommand, int>, PublishSlotsHandler>();
 builder.Services.AddTransient<ICommandHandler<ProgramarCitaCommand, long>, ProgramarCitaHandler>();
+builder.Services.AddTransient<ICommandHandler<EnqueueNotificationCommand, long>, EnqueueNotificationHandler>();
+builder.Services.AddTransient<ICommandHandler<ProcessPendingNotificationsCommand, int>, ProcessPendingNotificationsHandler>();
+builder.Services.AddTransient<ICommandHandler<GenerarRipsCommand, int>, GenerarRipsHandler>();
+builder.Services.AddTransient<ICommandHandler<GenerarLoteRipsCommand, long>, GenerarLoteRipsHandler>();
 
 var app = builder.Build();
 

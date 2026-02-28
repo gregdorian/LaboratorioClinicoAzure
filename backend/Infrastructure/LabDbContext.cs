@@ -16,6 +16,9 @@ namespace Lab.Api.Infrastructure
         public DbSet<Factura> Factura { get; set; } = null!;
         public DbSet<DisponibilidadHoraria> DisponibilidadHoraria { get; set; } = null!;
         public DbSet<Cita> Citas { get; set; } = null!;
+        public DbSet<NotificacionCita> NotificacionesCita { get; set; } = null!;
+        public DbSet<RipsTransaccional> RipsTransaccional { get; set; } = null!;
+        public DbSet<RipsLoteControl> RipsLoteControl { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -93,6 +96,34 @@ namespace Lab.Api.Infrastructure
                 b.HasKey(c => c.IdCita);
                 b.Property(c => c.IdCita).ValueGeneratedOnAdd();
                 b.Property(c => c.Motivo).HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<NotificacionCita>(b =>
+            {
+                b.ToTable("NotificacionesCita");
+                b.HasKey(n => n.IdNotificacion);
+                b.Property(n => n.IdNotificacion).ValueGeneratedOnAdd();
+                b.Property(n => n.TipoNotif).HasMaxLength(50).IsRequired();
+                b.Property(n => n.Destinatario).HasMaxLength(100).IsRequired();
+                b.Property(n => n.Asunto).HasMaxLength(200).IsRequired();
+                b.Property(n => n.MensajeError).HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<RipsTransaccional>(b =>
+            {
+                b.ToTable("RIPS_Transaccional");
+                b.HasKey(r => r.IdRips);
+                b.Property(r => r.IdRips).ValueGeneratedOnAdd();
+                b.Property(r => r.ConsecutivoRips).HasMaxLength(20).IsRequired();
+                b.Property(r => r.CodigoCups).HasMaxLength(20).IsRequired();
+            });
+
+            modelBuilder.Entity<RipsLoteControl>(b =>
+            {
+                b.ToTable("RIPS_LoteControl");
+                b.HasKey(l => l.IdLote);
+                b.Property(l => l.IdLote).ValueGeneratedOnAdd();
+                b.Property(l => l.NumeroLote).HasMaxLength(30).IsRequired();
             });
         }
     }
