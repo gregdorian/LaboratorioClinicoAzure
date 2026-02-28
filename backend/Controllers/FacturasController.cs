@@ -20,6 +20,7 @@ namespace Lab.Api.Controllers
         public FacturasController(IDispatcher dispatcher, LabDbContext db) { _dispatcher = dispatcher; _db = db; }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetAll()
         {
             var items = _db.Factura.Select(f => new { f.IdFactura, f.NroFactura, f.MontoTotal, f.EstadoPago, f.FechaFacturacion }).ToList();
@@ -27,6 +28,7 @@ namespace Lab.Api.Controllers
         }
 
         [HttpGet("{id:long}")]
+        [AllowAnonymous]
         public IActionResult Get(long id)
         {
             var f = _db.Factura.Where(x => x.IdFactura == id).Select(x => new { x.IdFactura, x.NroFactura, x.MontoTotal, x.EstadoPago, x.FechaFacturacion, x.IdSolicitud, x.IdEntidadPagadora }).FirstOrDefault();
