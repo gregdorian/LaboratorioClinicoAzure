@@ -7,6 +7,7 @@ namespace Lab.Api.Domain.Entities
         public string? NroHistoriaClinica { get; set; }
         public string? TipoSangre { get; set; }
 
+        // Propiedades de navegación
         public Persona? Persona { get; set; }
     }
 }

@@ -16,5 +16,9 @@ namespace Lab.Api.Domain.Entities
         public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
         public DateTime? FechaConfirmacion { get; set; }
         public DateTime? FechaCancelacion { get; set; }
+
+        // Propiedades de navegación
+        public Paciente? Paciente { get; set; }
+        public DisponibilidadHoraria? Disponibilidad { get; set; }
     }
 }

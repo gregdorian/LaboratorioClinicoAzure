@@ -12,6 +12,8 @@ namespace Lab.Api.Domain.Entities
         public DateTime FechaSolicitud { get; set; }
         public bool IsAnulado { get; set; }
 
+        // Propiedades de navegación
+        public Paciente? Paciente { get; set; }
         public List<ExamenSolicitado>? Examenes { get; set; }
     }
 }

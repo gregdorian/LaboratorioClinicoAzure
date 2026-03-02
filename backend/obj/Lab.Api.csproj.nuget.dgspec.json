@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/german/azuredev-e8f8/LaboratorioClinicoAzure/backend/Lab.Api.csproj": {}
+    "/home/german/slcm/LaboratorioClinicoAzure/backend/Lab.Api.csproj": {}
   },
   "projects": {
-    "/home/german/azuredev-e8f8/LaboratorioClinicoAzure/backend/Lab.Api.csproj": {
+    "/home/german/slcm/LaboratorioClinicoAzure/backend/Lab.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/german/azuredev-e8f8/LaboratorioClinicoAzure/backend/Lab.Api.csproj",
+        "projectUniqueName": "/home/german/slcm/LaboratorioClinicoAzure/backend/Lab.Api.csproj",
         "projectName": "Lab.Api",
-        "projectPath": "/home/german/azuredev-e8f8/LaboratorioClinicoAzure/backend/Lab.Api.csproj",
+        "projectPath": "/home/german/slcm/LaboratorioClinicoAzure/backend/Lab.Api.csproj",
         "packagesPath": "/home/german/.nuget/packages/",
-        "outputPath": "/home/german/azuredev-e8f8/LaboratorioClinicoAzure/backend/obj/",
+        "outputPath": "/home/german/slcm/LaboratorioClinicoAzure/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/german/.nuget/NuGet/NuGet.Config"

@@ -90,6 +90,10 @@ namespace Lab.Api.Infrastructure
                 b.HasKey(s => s.IdSolicitud);
                 b.Property(s => s.IdSolicitud).ValueGeneratedOnAdd();
                 b.Property(s => s.NroOrden).HasMaxLength(20).IsRequired();
+                b.HasOne(s => s.Paciente)
+                    .WithMany()
+                    .HasForeignKey(s => s.IdPaciente)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<ExamenSolicitado>(b =>
@@ -97,6 +101,18 @@ namespace Lab.Api.Infrastructure
                 b.ToTable("ExamenesSolicitados");
                 b.HasKey(es => es.IdExamenSolicitado);
                 b.Property(es => es.IdExamenSolicitado).ValueGeneratedOnAdd();
+                b.HasOne<SolicitudExamen>()
+                    .WithMany(s => s.Examenes)
+                    .HasForeignKey(es => es.IdSolicitud)
+                    .OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(es => es.Examen)
+                    .WithMany()
+                    .HasForeignKey(es => es.IdExamen)
+                    .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(es => es.CUPS)
+                    .WithMany()
+                    .HasForeignKey(es => es.IdCUPS)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<Factura>(b =>
@@ -122,6 +138,14 @@ namespace Lab.Api.Infrastructure
                 b.HasKey(c => c.IdCita);
                 b.Property(c => c.IdCita).ValueGeneratedOnAdd();
                 b.Property(c => c.Motivo).HasMaxLength(500);
+                b.HasOne(c => c.Paciente)
+                    .WithMany()
+                    .HasForeignKey(c => c.IdPaciente)
+                    .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(c => c.Disponibilidad)
+                    .WithMany()
+                    .HasForeignKey(c => c.IdDisponibilidad)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<NotificacionCita>(b =>

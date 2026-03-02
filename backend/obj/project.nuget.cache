@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Kbp8YTZXw4E=",
+  "dgSpecHash": "9DcDz7U3/Zk=",
   "success": true,
-  "projectFilePath": "/home/german/azuredev-e8f8/LaboratorioClinicoAzure/backend/Lab.Api.csproj",
+  "projectFilePath": "/home/german/slcm/LaboratorioClinicoAzure/backend/Lab.Api.csproj",
   "expectedPackageFiles": [
     "/home/german/.nuget/packages/azure.core/1.38.0/azure.core.1.38.0.nupkg.sha512",
     "/home/german/.nuget/packages/azure.identity/1.11.4/azure.identity.1.11.4.nupkg.sha512",
